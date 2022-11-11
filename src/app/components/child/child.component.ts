@@ -2,6 +2,7 @@ import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { Message } from 'src/app/interfaces/message';
 import { ObservableService } from '../../services/observable.service';
 import { ServiceService } from '../../services/service.service';
+import { ObservableChildService } from '../../services/observable-child.service';
 
 @Component({
   selector: 'app-child',
@@ -17,8 +18,9 @@ export class ChildComponent implements OnInit {
   isActive: boolean;
 
   constructor(
-    private observableService: ObservableService,
-    private serviceService: ServiceService
+    private observableServiceChild: ObservableChildService,
+    private serviceService: ServiceService,
+    private observableService: ObservableService
   ) {
     this.message = { message: '' }
     this.messageEmit = new EventEmitter()
@@ -35,8 +37,6 @@ export class ChildComponent implements OnInit {
       this.message = this.serviceService.getMessage()
     } else if (this.type === 'observableParent' && this.isActive) {
       this.observableService.messageParent.subscribe((message: any) => { this.message = message })
-      console.log(2, this.message)
-
     } else if (this.type === 'inputParent') {
       this.message = this.messageInput
     }
@@ -46,14 +46,14 @@ export class ChildComponent implements OnInit {
   addServiceMessage() {
     this.message = { message: '' }
     this.activeEmit.emit('serviceChild')
-    this.serviceService.insertMessage({ message: 'mensaje desde el hijo al padre servicio' })
+    this.serviceService.insertMessage({ message: ' Child using Service' })
     this.isActive = false;
   }
 
   addObservableMessage() {
     this.activeEmit.emit('observableChild')
-    this.observableService.emitMessage({ message: 'mensaje desde el hijo al padre obserbable' })
-    console.log('child')
+    this.observableService.emitMessage({ message: '' })
+    this.observableServiceChild.emitMessage({ message: ' Child using Subject' })
     this.isActive = false;
   }
 
@@ -61,7 +61,7 @@ export class ChildComponent implements OnInit {
     this.messageInput = { message: '' }
     this.message = { message: '' }
     this.activeEmit.emit('outputChild')
-    let message = { message: 'mensaje desde el hijo al padre output' }
+    let message = { message: ' Child using output property' }
     this.messageEmit.emit(message)
     this.isActive = false;
   }

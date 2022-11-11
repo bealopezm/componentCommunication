@@ -3,6 +3,7 @@ import { Message } from 'src/app/interfaces/message';
 import { ServiceService } from 'src/app/services/service.service';
 import { ObservableService } from '../../services/observable.service';
 import { Subscription } from 'rxjs';
+import { ObservableChildService } from '../../services/observable-child.service';
 
 @Component({
   selector: 'app-parent',
@@ -19,7 +20,8 @@ export class ParentComponent implements OnInit {
 
   constructor(
     private observableService: ObservableService,
-    private serviceService: ServiceService
+    private serviceService: ServiceService,
+    private observableChildService: ObservableChildService
   ) {
     this.message = { message: '' };
     this.type = '';
@@ -34,8 +36,7 @@ export class ParentComponent implements OnInit {
     if (this.activeEmit === 'serviceChild' && this.isActive) {
       this.message = this.serviceService.getMessage()
     } else if (this.activeEmit === 'observableChild' && this.isActive) {
-      this.observableService.messageChild.subscribe((message: any) => { this.message = message })
-      console.log(1, this.message)
+      this.observableChildService.messageChild.subscribe((message: any) => { this.message = message })
     }
     this.isActive = true;
   }
@@ -43,14 +44,14 @@ export class ParentComponent implements OnInit {
   addServiceMessage() {
     this.message = { message: '' }
     this.type = 'serviceParent';
-    this.serviceService.insertMessage({ message: 'mensaje desde el padre al hijo servicio' })
+    this.serviceService.insertMessage({ message: ' Parent using Service' })
     this.isActive = false
   }
 
   addObservableMessage() {
     this.type = 'observableParent';
-    this.observableService.emitMessage({ message: 'mensaje desde el padre al hijo obserbable' })
-    console.log('parent')
+    this.observableChildService.emitMessage({ message: '' })
+    this.observableService.emitMessage({ message: ' Parent using Subject' })
     this.isActive = false
 
   }
@@ -58,7 +59,7 @@ export class ParentComponent implements OnInit {
   addInputMessage() {
     this.message = { message: '' }
     this.type = 'inputParent';
-    this.messageInput = { message: 'mensaje desde el padre al hijo Input' }
+    this.messageInput = { message: ' Parent using input property' }
     this.isActive = false
   }
 
